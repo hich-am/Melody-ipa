@@ -1,0 +1,23 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "melodyapp-18f75",
+          "appId": "1:1042981248112:android:44320c148e19c65469a8b5",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "melodyapp-18f75",
+          "configurations": {
+            "android": "1:1042981248112:android:44320c148e19c65469a8b5",
+            "web": "1:1042981248112:web:967996235bc05de669a8b5",
+            "windows": "1:1042981248112:web:967996235bc05de669a8b5"
+          }
+        }
+      }
+    }
+  }
+}

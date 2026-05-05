@@ -1,0 +1,80 @@
+name: melody
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  google_fonts: ^8.0.2
+  flutter_animate: ^4.5.2
+
+  # Firebase
+  firebase_core: ^3.6.0
+  firebase_auth: ^5.3.1
+  cloud_firestore: ^5.4.4
+
+  # Biometric Authentication
+  local_auth: ^2.3.0
+  app_settings: ^5.1.1
+
+  # Audio playback
+  just_audio: ^0.9.40
+  audio_service: ^0.18.15
+  just_audio_background: ^0.0.1-beta.13
+  audio_session: ^0.1.18
+
+  # Networking & Auth
+  http: ^1.2.1
+  flutter_web_auth_2: ^5.0.0
+
+  # State Management
+  provider: ^6.1.1
+
+  # Local storage
+  shared_preferences: ^2.3.2
+
+  # Charts
+  fl_chart: ^0.69.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.3
+  flutter_native_splash: ^2.4.4
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/sounds/
+    - assets/icon/
+    - assets/splash/
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/app-icon.png"
+  adaptive_icon_background: "#0D0D14"
+  adaptive_icon_foreground: "assets/icon/app-icon.png"
+  min_sdk_android: 21
+
+flutter_native_splash:
+  color: "#0D0D14"
+  image: assets/splash/logo.png
+  color_dark: "#0D0D14"
+  image_dark: assets/splash/logo.png
+  android: true
+  ios: true
+  android_12:
+    color: "#0D0D14"
+    image: assets/splash/logo.png
+    color_dark: "#0D0D14"
+    image_dark: assets/splash/logo.png
