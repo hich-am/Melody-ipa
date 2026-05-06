@@ -23,9 +23,13 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'iOS Firebase is configured via GoogleService-Info.plist in this app.',
+        );
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'macOS Firebase is configured via GoogleService-Info.plist in this app.',
+        );
       case TargetPlatform.windows:
         return windows;
       case TargetPlatform.linux:
@@ -55,24 +59,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1042981248112',
     projectId: 'melodyapp-18f75',
     storageBucket: 'melodyapp-18f75.firebasestorage.app',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCZJAWUi3Iwy6GuFoJqjOiIyo3a3S6BQvU',
-    appId: '1:1042981248112:android:44320c148e19c65469a8b5',
-    messagingSenderId: '1042981248112',
-    projectId: 'melodyapp-18f75',
-    storageBucket: 'melodyapp-18f75.firebasestorage.app',
-    iosBundleId: 'com.melody.app.melody',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCZJAWUi3Iwy6GuFoJqjOiIyo3a3S6BQvU',
-    appId: '1:1042981248112:android:44320c148e19c65469a8b5',
-    messagingSenderId: '1042981248112',
-    projectId: 'melodyapp-18f75',
-    storageBucket: 'melodyapp-18f75.firebasestorage.app',
-    iosBundleId: 'com.melody.app.melody',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(

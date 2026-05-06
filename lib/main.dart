@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:provider/provider.dart';
+import 'dart:async';
+import 'dart:io';
 
 import 'theme/app_theme.dart';
 import 'screens/auth/gateway_screen.dart';
@@ -20,45 +22,59 @@ import 'core/providers/theme_provider.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
 
-  // ── Background audio init (MUST come before Firebase) ──────────────────
-  try {
-    await JustAudioBackground.init(
-      androidNotificationChannelId: 'com.melody.app.melody.channel.audio',
-      androidNotificationChannelName: 'Melody Audio',
-      androidNotificationOngoing: true,
-      androidShowNotificationBadge: true,
+    // Keep startup resilient: iOS runtime/plugin regressions should not abort launch.
+    if (!Platform.isIOS) {
+      try {
+        await JustAudioBackground.init(
+          androidNotificationChannelId: 'com.melody.app.melody.channel.audio',
+          androidNotificationChannelName: 'Melody Audio',
+          androidNotificationOngoing: true,
+          androidShowNotificationBadge: true,
+        );
+      } catch (e) {
+        debugPrint('⚠️ JustAudioBackground init failed: $e');
+      }
+    }
+
+    try {
+      if (Platform.isIOS) {
+        // iOS Firebase config file is environment-specific; avoid startup crash
+        // when missing/misconfigured and initialize lazily where needed.
+        debugPrint('ℹ️ Skipping eager Firebase init on iOS startup');
+      } else if (Platform.isMacOS) {
+        await Firebase.initializeApp();
+      } else {
+        await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
+      }
+      debugPrint('✅ Firebase initialized successfully');
+    } catch (e) {
+      debugPrint('⚠️ Firebase init failed: $e');
+    }
+
+    try {
+      await AudioPlayerService.instance.init();
+    } catch (e) {
+      debugPrint('⚠️ AudioPlayerService init failed: $e');
+    }
+
+    runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => ThemeProvider()),
+          ChangeNotifierProvider(create: (_) => MusicProvider()),
+        ],
+        child: const MelodyApp(),
+      ),
     );
-  } catch (e) {
-    debugPrint('⚠️ JustAudioBackground init failed: $e');
-  }
-
-  // ── Firebase init ──────────────────────────────────────────────────────────
-  try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-    debugPrint('✅ Firebase initialized successfully');
-  } catch (e) {
-    debugPrint('⚠️ Firebase init failed: $e');
-  }
-
-  // ── Singleton audio player init ──────────────────────────────────────────
-  try {
-    await AudioPlayerService.instance.init();
-  } catch (e) {
-    debugPrint('⚠️ AudioPlayerService init failed: $e');
-  }
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => MusicProvider()),
-      ],
-      child: const MelodyApp(),
-    ),
-  );
+  }, (error, stackTrace) {
+    debugPrint('❌ Unhandled startup error: $error');
+    debugPrint('$stackTrace');
+  });
 }
 
 class MelodyApp extends StatelessWidget {
