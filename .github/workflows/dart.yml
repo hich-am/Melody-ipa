@@ -8,17 +8,17 @@ jobs:
     name: 🎉 iOS Build
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          architecture: x64
+      - run: flutter --version
       - run: flutter pub get
-      
-
-      - run: pod repo update
+      - name: Resolve iOS pods (retry once)
         working-directory: ios
+        run: |
+          pod install --repo-update || (sleep 15 && pod install --repo-update)
 
       - run: flutter build ios --release --no-codesign
 
