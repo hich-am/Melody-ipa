@@ -3,8 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/ambient_background.dart';
 import '../../widgets/glass_card.dart';
-import '../../core/services/biometric_service.dart';
-import 'package:app_settings/app_settings.dart';
 import 'package:flutter/services.dart';
 import 'dart:math' as math;
 
@@ -20,7 +18,7 @@ class _GatewayScreenState extends State<GatewayScreen>
   late AnimationController _controller;
   bool _isAuthenticating = false;
   String _statusMessage = 'Touch to Start';
-  String _statusSub = 'AUTHENTICATE WITH BIOMETRICS';
+  String _statusSub = 'TAP TO CONTINUE';
   Color _ringColor = AppColors.primary;
 
   @override
@@ -31,9 +29,9 @@ class _GatewayScreenState extends State<GatewayScreen>
       duration: Duration(seconds: 8),
     )..repeat();
 
-    // Auto-trigger biometric on screen open
+    // Auto-proceed on screen open without biometric gating.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _triggerBiometric();
+      _enterApp();
     });
   }
 
@@ -43,67 +41,23 @@ class _GatewayScreenState extends State<GatewayScreen>
     super.dispose();
   }
 
-  Future<void> _triggerBiometric() async {
+  Future<void> _enterApp() async {
     if (_isAuthenticating) return;
     setState(() {
       _isAuthenticating = true;
-      _statusMessage = 'Authenticating…';
-      _statusSub = 'PLACE YOUR FINGER ON THE SENSOR';
+      _statusMessage = 'Opening…';
+      _statusSub = 'PREPARING YOUR SESSION';
     });
 
-    final bio = BiometricService.instance;
-    final available = await bio.isAvailable();
-
-    if (!available) {
-      // Device has no biometric hardware — go straight to login
-      _navigateAfterAuth();
-      return;
-    }
-
-    final enrolled = await bio.isEnrolled();
-    if (!enrolled) {
-      if (mounted) {
-        setState(() {
-          _statusMessage = 'No Fingerprint Found';
-          _statusSub = 'OPENING SYSTEM SETTINGS';
-          _ringColor = AppColors.error;
-          _isAuthenticating = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-                'No biometrics enrolled. Redirecting to device settings...'),
-          ),
-        );
-        // Requirement: Redirect user to system settings to register fingerprint
-        AppSettings.openAppSettings(type: AppSettingsType.security);
-      }
-      return;
-    }
-
-    final success = await bio.authenticate(
-      reason: 'Authenticate to enter Melody',
-    );
-
     if (!mounted) return;
-
-    if (success) {
-      SystemSound.play(SystemSoundType.click); // Requirement: Play a success sound
-      setState(() {
-        _statusMessage = 'Authenticated ✓';
-        _statusSub = 'WELCOME BACK';
-        _ringColor = AppColors.secondary;
-      });
-      await Future.delayed(Duration(milliseconds: 600));
-      _navigateAfterAuth();
-    } else {
-      setState(() {
-        _statusMessage = 'Touch to Start';
-        _statusSub = 'TAP TO TRY AGAIN';
-        _ringColor = AppColors.error;
-        _isAuthenticating = false;
-      });
-    }
+    SystemSound.play(SystemSoundType.click);
+    setState(() {
+      _statusMessage = 'Ready ✓';
+      _statusSub = 'WELCOME BACK';
+      _ringColor = AppColors.secondary;
+    });
+    await Future.delayed(Duration(milliseconds: 500));
+    _navigateAfterAuth();
   }
 
   void _navigateAfterAuth() {
@@ -172,7 +126,7 @@ class _GatewayScreenState extends State<GatewayScreen>
 
             // Biometric Fingerprint Section
             GestureDetector(
-              onTap: _triggerBiometric,
+              onTap: _enterApp,
               child: Stack(
                 alignment: Alignment.center,
                 clipBehavior: Clip.none,
