@@ -23,12 +23,16 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // ── Background audio init (MUST come before Firebase) ──────────────────
-  await JustAudioBackground.init(
-    androidNotificationChannelId: 'com.melody.app.melody.channel.audio',
-    androidNotificationChannelName: 'Melody Audio',
-    androidNotificationOngoing: true,
-    androidShowNotificationBadge: true,
-  );
+  try {
+    await JustAudioBackground.init(
+      androidNotificationChannelId: 'com.melody.app.melody.channel.audio',
+      androidNotificationChannelName: 'Melody Audio',
+      androidNotificationOngoing: true,
+      androidShowNotificationBadge: true,
+    );
+  } catch (e) {
+    debugPrint('⚠️ JustAudioBackground init failed: $e');
+  }
 
   // ── Firebase init ──────────────────────────────────────────────────────────
   try {

@@ -7,7 +7,6 @@ list(APPEND FLUTTER_PLUGIN_LIST
   desktop_webview_window
   firebase_auth
   firebase_core
-  local_auth_windows
   url_launcher_windows
   window_to_front
 )
