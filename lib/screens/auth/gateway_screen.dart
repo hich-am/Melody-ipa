@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/ambient_background.dart';
 import '../../widgets/glass_card.dart';
@@ -79,7 +80,8 @@ class _GatewayScreenState extends State<GatewayScreen>
   void _navigateAfterAuth() {
     if (!mounted) return;
     try {
-      final user = FirebaseAuth.instance.currentUser;
+      final hasFirebase = Firebase.apps.isNotEmpty;
+      final user = hasFirebase ? FirebaseAuth.instance.currentUser : null;
       Navigator.pushReplacementNamed(
         context,
         user != null ? '/main' : '/login',

@@ -40,11 +40,7 @@ Future<void> main() async {
     }
 
     try {
-      if (Platform.isIOS) {
-        // iOS Firebase config file is environment-specific; avoid startup crash
-        // when missing/misconfigured and initialize lazily where needed.
-        debugPrint('ℹ️ Skipping eager Firebase init on iOS startup');
-      } else if (Platform.isMacOS) {
+      if (Platform.isMacOS) {
         await Firebase.initializeApp();
       } else {
         await Firebase.initializeApp(
