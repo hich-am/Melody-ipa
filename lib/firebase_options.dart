@@ -23,9 +23,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'iOS Firebase is configured via GoogleService-Info.plist in this app.',
-        );
+        return ios;
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'macOS Firebase is configured via GoogleService-Info.plist in this app.',
@@ -68,5 +66,14 @@ class DefaultFirebaseOptions {
     projectId: 'melodyapp-18f75',
     authDomain: 'melodyapp-18f75.firebaseapp.com',
     storageBucket: 'melodyapp-18f75.firebasestorage.app',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyCZJAWUi3Iwy6GuFoJqjOiIyo3a3S6BQvU',
+    appId: '1:1042981248112:ios:0000000000000000',
+    messagingSenderId: '1042981248112',
+    projectId: 'melodyapp-18f75',
+    storageBucket: 'melodyapp-18f75.firebasestorage.app',
+    iosBundleId: 'com.melody.app.melody',
   );
 }

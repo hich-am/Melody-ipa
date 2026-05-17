@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/ambient_background.dart';
 import '../../widgets/glass_card.dart';
@@ -49,21 +50,38 @@ class _GatewayScreenState extends State<GatewayScreen>
       _statusSub = 'PREPARING YOUR SESSION';
     });
 
-    if (!mounted) return;
-    SystemSound.play(SystemSoundType.click);
-    setState(() {
-      _statusMessage = 'Ready ✓';
-      _statusSub = 'WELCOME BACK';
-      _ringColor = AppColors.secondary;
-    });
-    await Future.delayed(Duration(milliseconds: 500));
-    _navigateAfterAuth();
+    try {
+      if (!mounted) return;
+      SystemSound.play(SystemSoundType.click);
+      setState(() {
+        _statusMessage = 'Ready ✓';
+        _statusSub = 'WELCOME BACK';
+        _ringColor = AppColors.secondary;
+      });
+      await Future.delayed(Duration(milliseconds: 500));
+      _navigateAfterAuth();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _statusMessage = 'Touch to Start';
+        _statusSub = 'TAP TO TRY AGAIN';
+        _ringColor = AppColors.error;
+      });
+      debugPrint('⚠️ Failed to enter app: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isAuthenticating = false;
+        });
+      }
+    }
   }
 
   void _navigateAfterAuth() {
     if (!mounted) return;
     try {
-      final user = FirebaseAuth.instance.currentUser;
+      final hasFirebase = Firebase.apps.isNotEmpty;
+      final user = hasFirebase ? FirebaseAuth.instance.currentUser : null;
       Navigator.pushReplacementNamed(
         context,
         user != null ? '/main' : '/login',
